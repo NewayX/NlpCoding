@@ -5,8 +5,16 @@ import matplotlib.pylab as plt
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']  # 设置支持中文的字体
 plt.rcParams['axes.unicode_minus'] = False               # 解决负号显示问题
 
-x=torch.tensor([[50.0],[60.0],[70.0],[80.0],[90.0]])
-y = torch.tensor([[150.0], [180.0], [210.0], [240.0], [270.0]])
+x=torch.tensor([[50.0],
+                [60.0],
+                [70.0],
+                [80.0],
+                [90.0]])
+y = torch.tensor([[150.0],
+                  [180.0],
+                  [210.0],
+                  [240.0],
+                  [270.0]])
 
 model=nn.Linear(in_features=1,out_features=1)
 
