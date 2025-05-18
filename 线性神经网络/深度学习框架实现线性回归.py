@@ -32,7 +32,7 @@ for epoch in range(2000):
     optimizer.zero_grad()
     loss.backward()
 
-    # 更新参数
+    # 更新权重
     optimizer.step()
 
     if epoch % 200 ==0:
