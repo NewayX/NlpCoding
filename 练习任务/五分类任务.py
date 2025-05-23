@@ -48,31 +48,40 @@ def build_dataset(total_sample_num):
 
 
 def main():
-    model = TorchModel(5)
-    optim = torch.optim.Adam(model.parameters(), lr=0.01)
-    x, y = build_dataset(100)
-    # print("输入：", x)
-    # print("标签：", y)
-    #
-    # input_vecs = [
-    #     [0.07889086, 0.15229675, 0.31082123, 0.03504317, 0.88920843],
-    #     [0.74963533, 0.5524256, 0.95758807, 0.95520434, 0.84890681],
-    # ]
-    #
-    # tensor_input = torch.FloatTensor(input_vecs)  # shape: [2, 5]
-    # result = model(tensor_input)
-    #
-    # print("result是", result)
-    for epoch in range(1000):
-        loss = model(x, y)
-
-        loss.backward()
-
-        optim.step()
-        optim.zero_grad()
-
+    # 配置参数
+    epoch_num = 100  # 训练轮数
+    batch_size = 20  # 每次训练样本个数
+    train_sample = 5000  # 每轮训练总共训练的样本总数
+    input_size = 5  # 输入向量维度
+    learning_rate = 0.001  # 学习率
+    # 建立模型/实例化模型
+    model = TorchModel(input_size)
+    # 选择优化器
+    optim = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    log = []
+    # 创建训练集
+    train_x, train_y = build_dataset(train_sample)
+    # 训练过程
+    for epoch in range(epoch_num):
+        model.train()
+        watch_loss = []
+        # 每次取一个batch数据更新参数
+        for batch_index in range(train_sample // batch_size):
+            x = train_x[batch_index * batch_size:(batch_index + 1) * batch_size]
+            y = train_y[batch_index * batch_size:(batch_index + 1) * batch_size]
+            # 计算loss
+            loss = model(x, y)
+            # 反向传播，计算梯度
+            loss.backward()
+            # 更新梯度
+            optim.step()
+            optim.zero_grad()  # 梯度归零，防止梯度累积
+            # watch_loss.append(loss.item())
     # 保存模型
     torch.save(model.state_dict(), "model.bin")
+    # # 每轮训练画图
+    # print(log)
+    # plt.plot()
     return
 
 
@@ -92,9 +101,15 @@ def predict(model_path, input_vec):
 if __name__ == "__main__":
     main()
     test_vec = [
-        [0.07889086, 0.15229675, 0.31082123, 0.03504317, 0.88920843], #4
-        [0.74963533, 0.5524256, 0.95758807, 0.95520434, 0.84890681],#2
-        [0.00797868, 0.67482528, 0.13625847, 0.34675372, 0.19871392],#1
-        [0.09349776, 0.59416669, 0.92579291, 0.41567412, 0.1358894]#2
+        [0.07889086, 0.15229675, 0.31082123, 0.03504317, 0.88920843],  # 4
+        [0.74963533, 0.55242560, 0.95758807, 0.95520434, 0.84890681],  # 2
+        [0.00797868, 0.67482528, 0.13625847, 0.34675372, 0.19871392],  # 1
+        [0.09349776, 0.59416669, 0.92579291, 0.41567412, 0.13588940],  # 2
+        [0.09349776, 0.59416669, 0.92579291, 0.41567412, 0.13588940],  # 2
+        [0.24685248, 0.80337156, 0.15120206, 0.20991419, 0.53049848],  # 1
+        [0.73011541, 0.10258844, 0.62098259, 0.88850194, 0.37117433],  # 3
+        [0.09054711, 0.85486849, 0.85498069, 0.46832103, 0.73114310],  # 2
+        [0.30819061, 0.94331677, 0.49172152, 0.21169433, 0.41586388],  # 1
+        [0.99999991, 0.99999992, 0.99999993, 0.99999994, 0.99999995],  # 4
     ]
     predict("model.bin", test_vec)
